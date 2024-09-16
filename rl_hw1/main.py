@@ -59,7 +59,7 @@ def run_policy_evaluation(grid_world: GridWorld):
         iterative_policy_evaluation.values,
         title=f"Iterative Policy Evaluation",
         show=False,
-        filename=f"my_results/iterative_policy_evaluation.png",
+        filename=f"my_results/task1_result.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     grid_world.reset()
@@ -75,7 +75,7 @@ def run_policy_iteration(grid_world: GridWorld):
         policy_iteration.policy,
         title=f"Policy Iteration",
         show=False,
-        filename=f"my_results/policy_iteration.png",
+        filename=f"my_results/task2_result.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(policy_iteration.policy, 0)
@@ -95,7 +95,7 @@ def run_value_iteration(grid_world: GridWorld):
         value_iteration.policy,
         title=f"Value Iteration",
         show=False,
-        filename=f"my_results/value_iteration.png",
+        filename=f"my_results/task3_result.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(value_iteration.policy, 0)
@@ -117,7 +117,7 @@ def run_async_dynamic_programming(grid_world: GridWorld):
         async_dynamic_programming.policy,
         title=f"Async Dynamic Programming",
         show=False,
-        filename=f"my_results/async_dynamic_programming.png",
+        filename=f"my_results/task4_result_prior_sweep.png", #in_place, prior_sweep,
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(async_dynamic_programming.policy, 0)
@@ -130,7 +130,7 @@ def run_async_dynamic_programming(grid_world: GridWorld):
 
 if __name__ == "__main__":
     grid_world = init_grid_world()
-    run_policy_evaluation(grid_world)
-    run_policy_iteration(grid_world)
+    # run_policy_evaluation(grid_world)
+    # run_policy_iteration(grid_world)
     # run_value_iteration(grid_world)
-    # run_async_dynamic_programming(grid_world)
+    run_async_dynamic_programming(grid_world)
