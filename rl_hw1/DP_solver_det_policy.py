@@ -20,9 +20,9 @@ class DynamicProgramming:
         # print("gamma:",discount_factor)
         self.threshold = 1e-4  # default threshold for convergence
         self.values = np.zeros(grid_world.get_state_space())  # V(s)
-        # self.policy = np.zeros(grid_world.get_state_space(), dtype=int)  # pi(s)
+        self.policy = np.zeros(grid_world.get_state_space(), dtype=int)  # pi(s)
         # self.policy = policy  # pi(s)
-        self.policy = np.ones((grid_world.get_state_space(), 4)) / 4
+        # self.policy = np.ones((grid_world.get_state_space(), 4)) / 4
 
     def set_threshold(self, threshold: float) -> None:
         """Set the threshold for convergence
@@ -200,24 +200,25 @@ class PolicyIteration(DynamicProgramming):
             for i in range(self.grid_world.get_state_space()): #for i in V(s)
                 # print(i)
                 v_new = 0
-                
-                for move in range(4): #move=0,1,2,3
-                    next_state = self.next_state_dict[i,move]
-                    reward = self.reward_dict[i,move]
-                    done = self.done_dict[i,move]
-                    # if self.next_state_dict[i,move] == -1: #then it's a new step
-                    #     next_state, reward, done = self.grid_world.step(i,move)
-                    #     self.next_state_dict[i,move] = next_state
-                    #     self.reward_dict[i,move] = reward
-                    #     self.done_dict[i,move] = done
-                    next_state, reward, done = self.grid_world.step(i,move)
+                next_state, reward, done = self.grid_world.step(i,self.policy[i])
+                v_new += 1*(reward+self.discount_factor*v_copy[next_state]*(1-done))
+                # for move in range(4): #move=0,1,2,3
+                #     next_state = self.next_state_dict[i,move]
+                #     reward = self.reward_dict[i,move]
+                #     done = self.done_dict[i,move]
+                #     # if self.next_state_dict[i,move] == -1: #then it's a new step
+                #     #     next_state, reward, done = self.grid_world.step(i,move)
+                #     #     self.next_state_dict[i,move] = next_state
+                #     #     self.reward_dict[i,move] = reward
+                #     #     self.done_dict[i,move] = done
+                #     next_state, reward, done = self.grid_world.step(i,move)
 
-                    # if not i==next_state:
-                    v_new += self.policy[i,move]*(reward+self.discount_factor*v_copy[next_state]*(1-done))
-                    # else:
-                    #     v_new += self.policy[i,move]*(reward)
-                    # if i==0:
-                        # print(f"after action {move} of v_new:",v_new)
+                #     # if not i==next_state:
+                #     v_new += self.policy[i,move]*(reward+self.discount_factor*v_copy[next_state]*(1-done))
+                #     # else:
+                #     #     v_new += self.policy[i,move]*(reward)
+                #     # if i==0:
+                #         # print(f"after action {move} of v_new:",v_new)
 
                 self.values[i] = v_new
             return
@@ -232,7 +233,7 @@ class PolicyIteration(DynamicProgramming):
             # print("delta:",delta)
             if delta < self.threshold:
                 # print("finish evaluation:",self.values)
-                print("count:",count,";step counts:",self.grid_world.get_step_count())
+                # print("count:",count,";step counts:",self.grid_world.get_step_count())
                 return
             # print("step counts:",self.grid_world.get_step_count())
             count+=1
@@ -260,12 +261,12 @@ class PolicyIteration(DynamicProgramming):
                 values_nearby[move] = self.values[next_state]
             
             highest_value = np.max(values_nearby)
-            highest_value_indices = np.where(values_nearby == highest_value)[0] #ex. [2], [1,3]
+            highest_value_indices = np.argmax(values_nearby) #ex. [2], [1] if [1,3]
 
-            update_policy = np.zeros(4)
-            update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
+            # update_policy = np.zeros(4)
+            # update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
 
-            self.policy[i] = update_policy
+            self.policy[i] = highest_value_indices
 
         if_stable = (p_old == self.policy).all()
         return if_stable
@@ -277,13 +278,13 @@ class PolicyIteration(DynamicProgramming):
         while True:
             self.policy_evaluation()
             stable = self.policy_improvement()
-            print("step counts:",self.grid_world.get_step_count())
+            # print("step counts:",self.grid_world.get_step_count())
             if stable:
                 break
         
         #self policy is stochastic, with shape [#_of_state,4], saving the probability
         #change it to the deterministic one, with shape [#_of_state], , saving the moving direction
-        self.policy = np.argmax(self.policy, axis=1)
+        # self.policy = np.argmax(self.policy, axis=1)
         
         return
         raise NotImplementedError
@@ -373,16 +374,16 @@ class ValueIteration(DynamicProgramming):
                 values_nearby[move] = self.values[next_state]
             
             highest_value = np.max(values_nearby)
-            highest_value_indices = np.where(values_nearby == highest_value)[0] #ex. [2], [1,3]
+            highest_value_indices = np.argmax(values_nearby) #ex. [2], [1] if [1,3]
 
-            update_policy = np.zeros(4)
-            update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
+            # update_policy = np.zeros(4)
+            # update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
 
-            self.policy[i] = update_policy
+            self.policy[i] = highest_value_indices
 
         #self policy is stochastic, with shape [#_of_state,4], saving the probability
         #change it to the deterministic one, with shape [#_of_state], , saving the moving direction
-        self.policy = np.argmax(self.policy, axis=1)
+        # self.policy = np.argmax(self.policy, axis=1)
         return
         raise NotImplementedError
 
@@ -440,7 +441,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 return None, None
 
 
-    def evaluate_prior_sweep(self,state):
+    def evaluate_prior_sweep(self,state,B_error):
         """Evaluate the policy and update the values for one iteration"""
         # TODO: Implement the policy evaluation step
         #asynchronize: a copy is not needed anymore
@@ -459,7 +460,14 @@ class AsyncDynamicProgramming(DynamicProgramming):
             #     v_new += self.policy[i,move]*(reward)
             # if i==0:
                 # print(f"after action {move} of v_new:",v_new)
+        # error = B_error[state]
+        # w = 1.0 + 0.0 * error  # Adjust w based on the error
+        # self.values[state] = self.values[state] + w*(v_new - self.values[state])
+        
+        #update B_error
+        B_error[state] = abs(v_new - self.values[state])
 
+        #update state
         self.values[state] = v_new
         return
     
@@ -488,6 +496,10 @@ class AsyncDynamicProgramming(DynamicProgramming):
         #start update
         for i in range(self.grid_world.get_state_space()): #for i in V(s)
             # print(i)
+            #determine w based on B_error
+            # error = self.calculate_B_error(i)
+            # w = 1.0 + 0.0 * error  # Adjust w based on the error
+
             next_state, reward, done = self.grid_world.step(i,0)
             v_new = reward+self.discount_factor*self.values[next_state]*(1-done)
             for move in range(1,4): #move=0,1,2,3
@@ -499,14 +511,14 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 # if i==0:
                     # print(f"after action {move} of v_new:",v_new)
 
-            self.values[i] = self.values[i] + w*(v_new - self.values[i])
+            # self.values[i] = self.values[i] + w*(v_new - self.values[i])
         return
 
     def run(self) -> None:
         """Run the algorithm until convergence"""
         is_inplace = False
-        is_prior_sweep = False
-        is_sor = True
+        is_prior_sweep = True
+        is_sor = False
         # TODO: Implement the async dynamic programming algorithm until convergence
         if is_inplace or is_sor:
             while True:
@@ -515,7 +527,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 if is_inplace:
                     self.evaluate_in_place()
                 elif is_sor:
-                    self.evaluate_sor(w=1.0)
+                    self.evaluate_sor(w=1.1)
                 # print("self.values:",self.values)
                 delta = np.max(np.abs(self.values - v_old))
                 # print("delta:",delta)
@@ -535,16 +547,16 @@ class AsyncDynamicProgramming(DynamicProgramming):
                     values_nearby[move] = self.values[next_state]
                 
                 highest_value = np.max(values_nearby)
-                highest_value_indices = np.where(values_nearby == highest_value)[0] #ex. [2], [1,3]
+                highest_value_indices = np.argmax(values_nearby) #ex. [2], [1] if [1,3]
 
-                update_policy = np.zeros(4)
-                update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
+                # update_policy = np.zeros(4)
+                # update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
 
-                self.policy[i] = update_policy
+                self.policy[i] = highest_value_indices
 
             #self policy is stochastic, with shape [#_of_state,4], saving the probability
             #change it to the deterministic one, with shape [#_of_state], , saving the moving direction
-            self.policy = np.argmax(self.policy, axis=1)
+            # self.policy = np.argmax(self.policy, axis=1)
             return
         
         elif is_prior_sweep:
@@ -557,9 +569,9 @@ class AsyncDynamicProgramming(DynamicProgramming):
             #use an array, B_error to remember the Bellman error, delta=np.max(B_error)
 
             #Method1: use an array,B_error to remember the Bellman error, candidate = the index with max error, delta=np.max(B_error)
-            B_error = np.zeros(self.grid_world.get_state_space())
-            for i in range(self.grid_world.get_state_space()): #for v un V(s)
-                 B_error[i] = self.calculate_B_error(i)
+            B_error = np.ones(self.grid_world.get_state_space())*999.0
+            # for i in range(self.grid_world.get_state_space()): #for v un V(s)
+            #      B_error[i] = self.calculate_B_error(i)
 
             # print(B_error)
 
@@ -567,18 +579,18 @@ class AsyncDynamicProgramming(DynamicProgramming):
             while True:
                 urgent_state = np.argmax(B_error)
                 print(urgent_state)
-                self.evaluate_prior_sweep(urgent_state)
+                self.evaluate_prior_sweep(urgent_state,B_error)
 
                 print("before:",B_error)
                 print("values:",self.values)
 
-                #update B_error, there are 5 states to update
-                B_error[urgent_state] = self.calculate_B_error(urgent_state)
+                # #update B_error, there are 5 states to update
+                # B_error[urgent_state] = 0 #self.calculate_B_error(urgent_state)
                 
-                for move in range(4): #move=0,1,2,3
-                    next_state, reward, done = self.grid_world.step(urgent_state,move)
-                    update_error = self.calculate_B_error(next_state)
-                    B_error[next_state] = update_error
+                # for move in range(4): #move=0,1,2,3
+                #     next_state, reward, done = self.grid_world.step(urgent_state,move)
+                #     update_error = self.calculate_B_error(next_state)
+                #     B_error[next_state] = update_error
 
                 print("after:",B_error)
                 delta = np.max(B_error)
@@ -599,17 +611,17 @@ class AsyncDynamicProgramming(DynamicProgramming):
                     next_state, reward, done = self.grid_world.step(i,move)
                     values_nearby[move] = self.values[next_state]
                 
-                highest_value = np.max(values_nearby)
-                highest_value_indices = np.where(values_nearby == highest_value)[0] #ex. [2], [1,3]
+                highest_value = np.max(values_nearby) 
+                highest_value_indices = np.argmax(values_nearby) #ex. [2], [1] if [1,3]
 
-                update_policy = np.zeros(4)
-                update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
+                # update_policy = np.zeros(4)
+                # update_policy[highest_value_indices] = 1.0 / len(highest_value_indices) #ex. [0,1.0,0,0], [0,0.5,0,0.5]
 
-                self.policy[i] = update_policy
+                self.policy[i] = highest_value_indices
 
             #self policy is stochastic, with shape [#_of_state,4], saving the probability
             #change it to the deterministic one, with shape [#_of_state], , saving the moving direction
-            self.policy = np.argmax(self.policy, axis=1)
+            # self.policy = np.argmax(self.policy, axis=1)
             return
 
             

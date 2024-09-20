@@ -1,6 +1,6 @@
 import numpy as np
 
-from DP_solver import (
+from DP_solver_det_policy import (
     IterativePolicyEvaluation,
     PolicyIteration,
     ValueIteration,
@@ -117,7 +117,7 @@ def run_async_dynamic_programming(grid_world: GridWorld):
         async_dynamic_programming.policy,
         title=f"Async Dynamic Programming",
         show=False,
-        filename=f"my_results/task4_result_prior_sweep.png", #in_place, prior_sweep,
+        filename=f"my_results/task4_result_prior_sweep.png", #in_place, prior_sweep,sor
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(async_dynamic_programming.policy, 0)
@@ -130,7 +130,7 @@ def run_async_dynamic_programming(grid_world: GridWorld):
 
 if __name__ == "__main__":
     grid_world = init_grid_world()
-    # run_policy_evaluation(grid_world)
-    # run_policy_iteration(grid_world)
-    # run_value_iteration(grid_world)
+    run_policy_evaluation(grid_world)
+    run_policy_iteration(grid_world)
+    run_value_iteration(grid_world)
     run_async_dynamic_programming(grid_world)
