@@ -1,7 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-from r12942083.DP_solver import (
+from DP_solver import (
     IterativePolicyEvaluation,
     PolicyIteration,
     ValueIteration,
@@ -60,7 +59,7 @@ def run_policy_evaluation(grid_world: GridWorld):
         iterative_policy_evaluation.values,
         title=f"Iterative Policy Evaluation",
         show=False,
-        filename=f"my_results/task1_result.png",
+        filename=f"iterative_policy_evaluation.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     grid_world.reset()
@@ -76,7 +75,7 @@ def run_policy_iteration(grid_world: GridWorld):
         policy_iteration.policy,
         title=f"Policy Iteration",
         show=False,
-        filename=f"my_results/task2_result.png",
+        filename=f"policy_iteration.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(policy_iteration.policy, 0)
@@ -96,7 +95,7 @@ def run_value_iteration(grid_world: GridWorld):
         value_iteration.policy,
         title=f"Value Iteration",
         show=False,
-        filename=f"my_results/task3_result.png",
+        filename=f"value_iteration.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
     history = grid_world.run_policy(value_iteration.policy, 0)
@@ -118,15 +117,13 @@ def run_async_dynamic_programming(grid_world: GridWorld):
         async_dynamic_programming.policy,
         title=f"Async Dynamic Programming",
         show=False,
-        filename=f"my_results/task4_result_sor.png", #in_place, prior_sweep,sor,wall
+        filename=f"async_dynamic_programming.png",
     )
     print(f"Solved in {bold(green(grid_world.get_step_count()))} steps")
-    # record.append(grid_world.get_step_count())
     history = grid_world.run_policy(async_dynamic_programming.policy, 0)
     print(
         f"Start state: {bold(green(history[0][0]))}, End state: {bold(red(history[-1][0]))}"
     )
-    
     grid_world.reset()
     print()
 
@@ -137,16 +134,3 @@ if __name__ == "__main__":
     run_policy_iteration(grid_world)
     run_value_iteration(grid_world)
     run_async_dynamic_programming(grid_world)
-    # record = []
-    # ws = np.linspace(0.00001, 1.5, 31)
-    # for w in ws:
-    #     print("w=",w)
-    #     run_async_dynamic_programming(grid_world,w,record)
-    # print("record:",record)
-    # record =  [ 30184, 15312, 10208, 7744, 6600, 5632, 4928, 4312, 3872, 3432, 3080, 2816, 2552, 2376, 2200, 2024, 1848, 1672, 1496, 1056, 1496, 1760, 2024, 2288, 2640, 2992, 3344, 4664, 5544, 7216]
-    # plt.plot(ws[1:], record, marker='o')
-    # plt.xlabel('w')
-    # plt.ylabel('#_of_steps')
-    # plt.title('Effect of w on steps in SOR Method')
-    # plt.grid(True)
-    # plt.show()

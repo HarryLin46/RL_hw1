@@ -389,7 +389,7 @@ class ValueIteration(DynamicProgramming):
 
 
 class AsyncDynamicProgramming(DynamicProgramming):
-    def __init__(self, grid_world: GridWorld, discount_factor: float = 1.0, w=1.0):
+    def __init__(self, grid_world: GridWorld, discount_factor: float = 1.0):
         """Constructor for ValueIteration
 
         Args:
@@ -397,7 +397,6 @@ class AsyncDynamicProgramming(DynamicProgramming):
             discount_factor (float, optional): Discount factor gamma. Defaults to 1.0.
         """
         super().__init__(grid_world, discount_factor)
-        self.w=w
 
     #in-place DP
     def evaluate_in_place(self):
@@ -555,8 +554,8 @@ class AsyncDynamicProgramming(DynamicProgramming):
     def run(self) -> None:
         """Run the algorithm until convergence"""
         is_inplace = False
-        is_prior_sweep = False
-        is_sor = True
+        is_prior_sweep = True
+        is_sor = False
         is_wall = False
         # TODO: Implement the async dynamic programming algorithm until convergence
         if is_inplace or is_sor:
@@ -567,7 +566,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 if is_inplace:
                     self.evaluate_in_place()
                 elif is_sor:
-                    self.evaluate_sor(w=self.w)
+                    self.evaluate_sor(w=1.0)
                 update_count+=22
                 # print("self.values:",self.values)
                 delta = np.max(np.abs(self.values - v_old))
