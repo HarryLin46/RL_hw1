@@ -150,7 +150,7 @@ class IterativePolicyEvaluation(DynamicProgramming):
             delta = np.max(np.abs(self.values - v_old))
             # print("delta:",delta)
             if delta < self.threshold:
-                print("count:",count,";step counts:",self.grid_world.get_step_count())
+                # print("count:",count,";step counts:",self.grid_world.get_step_count())
                 return
             count+=1
             # print("step counts:",self.grid_world.get_step_count())
@@ -223,7 +223,7 @@ class PolicyIteration(DynamicProgramming):
                 self.values[i] = v_new
             return
 
-        count = 0
+        # count = 0
         while True:
             v_old = copy.deepcopy(self.values)
             # print("v_old:",v_old)
@@ -236,7 +236,7 @@ class PolicyIteration(DynamicProgramming):
                 # print("count:",count,";step counts:",self.grid_world.get_step_count())
                 return
             # print("step counts:",self.grid_world.get_step_count())
-            count+=1
+            # count+=1
         raise NotImplementedError
 
     def policy_improvement(self):
@@ -573,7 +573,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 # print("delta:",delta)
                 if delta < self.threshold:
                     break
-            print("update counts:",update_count)
+            # print("update counts:",update_count)
             #when V(s) is optimal, we can use it to find optimal policy
             for i in range(self.grid_world.get_state_space()): #for v un V(s)
                 #first assume 0 is the best policy and have biggest values
@@ -638,7 +638,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 # count+=1
                 if delta < self.threshold:# or count>12: #then self.values is optimal
                     break
-            print("update counts:",update_count)
+            # print("update counts:",update_count)
             #when V(s) is optimal, we can use it to find optimal policy
             for i in range(self.grid_world.get_state_space()): #for v un V(s)
                 #first assume 0 is the best policy and have biggest values
@@ -697,7 +697,7 @@ class AsyncDynamicProgramming(DynamicProgramming):
                 # count+=1
                 if delta < self.threshold:# or count>12: #then self.values is optimal
                     break
-            print("update counts:",update_count)
+            # print("update counts:",update_count)
             #when V(s) is optimal, we can use it to find optimal policy
             for i in range(self.grid_world.get_state_space()): #for v un V(s)
                 #first assume 0 is the best policy and have biggest values
